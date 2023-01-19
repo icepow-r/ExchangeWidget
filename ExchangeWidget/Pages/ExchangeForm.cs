@@ -11,6 +11,8 @@ namespace ExchangeWidget.Pages
     {
         private readonly BindingList<Currency> _currencyList;
         private readonly BindingList<Currency> _favoritesList;
+        private int _counter;
+        private DateTime _date;
         public ExchangeForm()
         {
             InitializeComponent();
@@ -18,15 +20,19 @@ namespace ExchangeWidget.Pages
             _currencyList = new BindingList<Currency>();
             _favoritesList = new BindingList<Currency>();
             GetCurrencyList();
+            GetFavoritesList();
             CurrencyDataGridView.DataSource = _currencyList;
             FavoritesDataGridView.DataSource = _favoritesList;
+
+            RefreshStatusDate();
         }
 
         private void GetCurrencyList()
         {
             _currencyList.Clear();
             var node = new BankService.DailyInfoSoapClient(DailyInfoSoapClient.EndpointConfiguration.DailyInfoSoap);
-            var elements = node.GetCursOnDateXML(DateTime.Today);
+            _date = node.GetLatestDateTime();
+            var elements = node.GetCursOnDateXML(_date);
             foreach (XmlNode currency in elements.ChildNodes)
             {
                 _currencyList.Add(new Currency()
@@ -38,6 +44,8 @@ namespace ExchangeWidget.Pages
                     CharCode = currency["VchCode"]!.InnerText.Trim(),
                 });
             }
+
+            _counter = elements.ChildNodes.Count;
         }
 
         private void GetFavoritesList()
@@ -89,12 +97,17 @@ namespace ExchangeWidget.Pages
         {
             if (e.TabPage.Name == "CursPage")
             {
-                GetCurrencyList();
+                RefreshStatusDate();
             }
             else if (e.TabPage.Name == "FavouritesPage")
             {
-                GetFavoritesList();
+                StatusLabel.Text = $"Количество курсов валют в избранном: {_favoritesList.Count}";
             }
+        }
+
+        private void RefreshStatusDate()
+        {
+            StatusLabel.Text = $"Данные выгружены на {_date.ToString("dd.MM.yyyy")}. Количество выгруженных курсов валют: {_counter}";
         }
     }
 }

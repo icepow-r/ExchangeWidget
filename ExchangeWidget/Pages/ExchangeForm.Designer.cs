@@ -49,7 +49,7 @@
             this.RefreshButton = new System.Windows.Forms.ToolStripButton();
             this.AddFavoriteButton = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.FakePanel = new System.Windows.Forms.Panel();
             this.MainPanel.SuspendLayout();
             this.CurrencyList.SuspendLayout();
@@ -162,7 +162,7 @@
             this.FavouritesPage.Location = new System.Drawing.Point(4, 24);
             this.FavouritesPage.Name = "FavouritesPage";
             this.FavouritesPage.Padding = new System.Windows.Forms.Padding(3);
-            this.FavouritesPage.Size = new System.Drawing.Size(810, 375);
+            this.FavouritesPage.Size = new System.Drawing.Size(810, 351);
             this.FavouritesPage.TabIndex = 1;
             this.FavouritesPage.Text = "Избранное";
             this.FavouritesPage.UseVisualStyleBackColor = true;
@@ -185,7 +185,7 @@
             this.FavoritesDataGridView.ReadOnly = true;
             this.FavoritesDataGridView.RowTemplate.Height = 25;
             this.FavoritesDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.FavoritesDataGridView.Size = new System.Drawing.Size(804, 369);
+            this.FavoritesDataGridView.Size = new System.Drawing.Size(804, 345);
             this.FavoritesDataGridView.TabIndex = 1;
             // 
             // dataGridViewTextBoxColumn1
@@ -259,18 +259,18 @@
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
+            this.StatusLabel});
             this.statusStrip1.Location = new System.Drawing.Point(0, 428);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(818, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
-            // toolStripStatusLabel1
+            // StatusLabel
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(108, 17);
-            this.toolStripStatusLabel1.Text = "Здесь будет статус";
+            this.StatusLabel.Name = "StatusLabel";
+            this.StatusLabel.Size = new System.Drawing.Size(108, 17);
+            this.StatusLabel.Text = "Здесь будет статус";
             // 
             // FakePanel
             // 
@@ -307,7 +307,7 @@
         private ToolStrip toolStrip1;
         private ToolStripButton RefreshButton;
         private StatusStrip statusStrip1;
-        private ToolStripStatusLabel toolStripStatusLabel1;
+        private ToolStripStatusLabel StatusLabel;
         private TabControl CurrencyList;
         private TabPage CursPage;
         private TabPage FavouritesPage;
