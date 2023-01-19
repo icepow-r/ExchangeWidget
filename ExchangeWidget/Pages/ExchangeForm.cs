@@ -1,9 +1,9 @@
 ﻿using BankService;
+using ExchangeWidget.Database;
 using ExchangeWidget.ServiceModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Xml;
-using ExchangeWidget.Database;
-using System.Linq;
 
 namespace ExchangeWidget.Pages
 {
@@ -33,7 +33,7 @@ namespace ExchangeWidget.Pages
                 {
                     Name = currency["Vname"]!.InnerText.Trim(),
                     Nominal = int.Parse(currency["Vnom"]!.InnerText.Trim()),
-                    Curs = decimal.Parse(currency["Vcurs"]!.InnerText.Trim()),
+                    Curs = decimal.Parse(currency["Vcurs"]!.InnerText.Trim(), CultureInfo.InvariantCulture),
                     Code = int.Parse(currency["Vcode"]!.InnerText.Trim()),
                     CharCode = currency["VchCode"]!.InnerText.Trim(),
                 });
