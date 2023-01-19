@@ -73,13 +73,18 @@ namespace ExchangeWidget.Pages
         private void AddFavoriteButton_Click(object sender, EventArgs e)
         {
             using var context = new CurrencyContext();
-
             var item = new Favorite
             {
                 Code = (int)CurrencyDataGridView.SelectedRows[0].Cells[3].Value
             };
+
+            if (context.Favorites.Find(item.Code) != null)
+                return;
+
             context.Favorites.Add(item);
             context.SaveChanges();
+
+            _favoritesList.Add((Currency)CurrencyDataGridView.SelectedRows[0].DataBoundItem);
         }
 
         private void CurrencyList_Selected(object sender, TabControlEventArgs e)
