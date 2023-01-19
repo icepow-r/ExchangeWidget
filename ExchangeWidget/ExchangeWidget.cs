@@ -4,7 +4,7 @@ namespace ExchangeWidget
 {
     public partial class ExchangeWidget : Form
     {
-        private Panel? _currentPanel;
+        private Stack<Panel> _navigator = new();
         public ExchangeWidget()
         {
             InitializeComponent();
@@ -23,9 +23,19 @@ namespace ExchangeWidget
 
         public void ChangeForm(Panel panel)
         {
-            if (_currentPanel != null) _currentPanel.Dispose();
+            if (_navigator.Count > 0)
+            {
+                _navigator.Peek().Parent = null;
+            }
             panel.Parent = this;
-            _currentPanel = panel;
+            _navigator.Push(panel);
+        }
+
+        public void GoBack()
+        {
+            var panel = _navigator.Pop();
+            panel.Dispose();
+            _navigator.Peek().Parent = this;
         }
     }
 }
