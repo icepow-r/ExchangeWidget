@@ -1,6 +1,4 @@
 using ExchangeWidget.Pages;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace ExchangeWidget
 {

@@ -1,38 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using BankService;
-using System.Xml;
+﻿using BankService;
 using ExchangeWidget.ServiceModel;
+using System.ComponentModel;
+using System.Xml;
 
 namespace ExchangeWidget.Pages
 {
     public partial class ExchangeForm : Form
     {
-        private BindingList<Currency> currencyList;
+        private readonly BindingList<Currency> _currencyList;
         public ExchangeForm()
         {
             InitializeComponent();
 
-            currencyList = new BindingList<Currency>();
+            _currencyList = new BindingList<Currency>();
             GetCurrencyList();
-            CurrencyDataGridView.DataSource = currencyList;
+            CurrencyDataGridView.DataSource = _currencyList;
         }
 
         private void GetCurrencyList()
         {
-            currencyList.Clear();
+            _currencyList.Clear();
             var node = new BankService.DailyInfoSoapClient(DailyInfoSoapClient.EndpointConfiguration.DailyInfoSoap);
             var elements = node.GetCursOnDateXML(DateTime.Today);
             foreach (XmlNode currency in elements.ChildNodes)
             {
-                currencyList.Add(new Currency()
+                _currencyList.Add(new Currency()
                 {
                     Name = currency["Vname"]!.InnerText.Trim(),
                     Nominal = int.Parse(currency["Vnom"]!.InnerText.Trim()),
