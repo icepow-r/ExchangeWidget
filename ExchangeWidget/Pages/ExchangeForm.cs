@@ -42,12 +42,10 @@ namespace ExchangeWidget.Pages
 
         private void GetFavoritesList()
         {
-            GetCurrencyList();
             var favoritesCodeList = new List<int>();
             using var context = new CurrencyContext();
             favoritesCodeList.AddRange(context.Favorites.Select(x => x.Code));
 
-            _favoritesList.Clear();
             foreach (var item in _currencyList
                                             .Where(x => favoritesCodeList
                                             .Any(y => y == x.Code)))
