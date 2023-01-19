@@ -50,6 +50,7 @@
             this.AddFavoriteButton = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.FakePanel = new System.Windows.Forms.Panel();
             this.MainPanel.SuspendLayout();
             this.CurrencyList.SuspendLayout();
             this.CursPage.SuspendLayout();
@@ -65,6 +66,7 @@
             this.MainPanel.Controls.Add(this.CurrencyList);
             this.MainPanel.Controls.Add(this.toolStrip1);
             this.MainPanel.Controls.Add(this.statusStrip1);
+            this.MainPanel.Controls.Add(this.FakePanel);
             this.MainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainPanel.Location = new System.Drawing.Point(0, 0);
             this.MainPanel.Name = "MainPanel";
@@ -76,10 +78,10 @@
             this.CurrencyList.Controls.Add(this.CursPage);
             this.CurrencyList.Controls.Add(this.FavouritesPage);
             this.CurrencyList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CurrencyList.Location = new System.Drawing.Point(0, 25);
+            this.CurrencyList.Location = new System.Drawing.Point(0, 49);
             this.CurrencyList.Name = "CurrencyList";
             this.CurrencyList.SelectedIndex = 0;
-            this.CurrencyList.Size = new System.Drawing.Size(818, 403);
+            this.CurrencyList.Size = new System.Drawing.Size(818, 379);
             this.CurrencyList.TabIndex = 0;
             this.CurrencyList.Selected += new System.Windows.Forms.TabControlEventHandler(this.CurrencyList_Selected);
             // 
@@ -89,7 +91,7 @@
             this.CursPage.Location = new System.Drawing.Point(4, 24);
             this.CursPage.Name = "CursPage";
             this.CursPage.Padding = new System.Windows.Forms.Padding(3);
-            this.CursPage.Size = new System.Drawing.Size(810, 375);
+            this.CursPage.Size = new System.Drawing.Size(810, 351);
             this.CursPage.TabIndex = 0;
             this.CursPage.Text = "Курсы валют";
             this.CursPage.UseVisualStyleBackColor = true;
@@ -112,7 +114,7 @@
             this.CurrencyDataGridView.ReadOnly = true;
             this.CurrencyDataGridView.RowTemplate.Height = 25;
             this.CurrencyDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.CurrencyDataGridView.Size = new System.Drawing.Size(804, 369);
+            this.CurrencyDataGridView.Size = new System.Drawing.Size(804, 345);
             this.CurrencyDataGridView.TabIndex = 0;
             this.CurrencyDataGridView.SelectionChanged += new System.EventHandler(this.CurrencyDataGridView_SelectionChanged);
             // 
@@ -229,7 +231,7 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.RefreshButton,
             this.AddFavoriteButton});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(818, 25);
             this.toolStrip1.TabIndex = 3;
@@ -269,6 +271,14 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(108, 17);
             this.toolStripStatusLabel1.Text = "Здесь будет статус";
+            // 
+            // FakePanel
+            // 
+            this.FakePanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.FakePanel.Location = new System.Drawing.Point(0, 0);
+            this.FakePanel.Name = "FakePanel";
+            this.FakePanel.Size = new System.Drawing.Size(818, 24);
+            this.FakePanel.TabIndex = 4;
             // 
             // ExchangeForm
             // 
@@ -315,5 +325,6 @@
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
+        private Panel FakePanel;
     }
 }
