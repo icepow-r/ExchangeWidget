@@ -13,7 +13,7 @@ public partial class CurrencyContext : DbContext
     public virtual DbSet<Favorite> Favorites { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlite("Currency.db");
+        => optionsBuilder.UseSqlite("Data Source=Currency.db");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -2,19 +2,24 @@
 using ExchangeWidget.ServiceModel;
 using System.ComponentModel;
 using System.Xml;
+using ExchangeWidget.Database;
+using System.Linq;
 
 namespace ExchangeWidget.Pages
 {
     public partial class ExchangeForm : Form
     {
         private readonly BindingList<Currency> _currencyList;
+        private readonly BindingList<Currency> _favoritesList;
         public ExchangeForm()
         {
             InitializeComponent();
 
             _currencyList = new BindingList<Currency>();
+            _favoritesList = new BindingList<Currency>();
             GetCurrencyList();
             CurrencyDataGridView.DataSource = _currencyList;
+            FavoritesDataGridView.DataSource = _favoritesList;
         }
 
         private void GetCurrencyList()
@@ -35,6 +40,23 @@ namespace ExchangeWidget.Pages
             }
         }
 
+        private void GetFavoritesList()
+        {
+            GetCurrencyList();
+            var favoritesCodeList = new List<int>();
+            using var context = new CurrencyContext();
+            favoritesCodeList.AddRange(context.Favorites.Select(x => x.Code));
+
+            _favoritesList.Clear();
+            foreach (var item in _currencyList
+                                            .Where(x => favoritesCodeList
+                                            .Any(y => y == x.Code)))
+            {
+                _favoritesList.Add(item);
+            }
+
+        }
+
         private void RefreshButton_Click(object sender, EventArgs e)
         {
             GetCurrencyList();
@@ -44,7 +66,31 @@ namespace ExchangeWidget.Pages
         {
             if (CurrencyDataGridView.SelectedRows.Count > 0)
             {
-                AddFavouriteButton.Enabled = true;
+                AddFavoriteButton.Enabled = true;
+            }
+        }
+
+        private void AddFavoriteButton_Click(object sender, EventArgs e)
+        {
+            using var context = new CurrencyContext();
+
+            var item = new Favorite
+            {
+                Code = (int)CurrencyDataGridView.SelectedRows[0].Cells[3].Value
+            };
+            context.Favorites.Add(item);
+            context.SaveChanges();
+        }
+
+        private void CurrencyList_Selected(object sender, TabControlEventArgs e)
+        {
+            if (e.TabPage.Name == "CursPage")
+            {
+                GetCurrencyList();
+            }
+            else if (e.TabPage.Name == "FavouritesPage")
+            {
+                GetFavoritesList();
             }
         }
     }
