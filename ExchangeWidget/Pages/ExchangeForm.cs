@@ -3,6 +3,7 @@ using ExchangeWidget.Database;
 using ExchangeWidget.ServiceModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Xml;
 
 namespace ExchangeWidget.Pages
@@ -24,7 +25,8 @@ namespace ExchangeWidget.Pages
             CurrencyDataGridView.DataSource = _currencyList;
             FavoritesDataGridView.DataSource = _favoritesList;
 
-            RefreshStatusDate();
+            SetInitialTabPage();
+            RefreshStatusAndButtons();
         }
 
         private void GetCurrencyList()
@@ -50,6 +52,7 @@ namespace ExchangeWidget.Pages
 
         private void GetFavoritesList()
         {
+            _favoritesList.Clear();
             var favoritesCodeList = new List<int>();
             using var context = new CurrencyContext();
             favoritesCodeList.AddRange(context.Favorites.Select(x => x.Code));
@@ -66,13 +69,22 @@ namespace ExchangeWidget.Pages
         private void RefreshButton_Click(object sender, EventArgs e)
         {
             GetCurrencyList();
+            GetFavoritesList();
+            RefreshStatusAndButtons();
         }
 
         private void CurrencyDataGridView_SelectionChanged(object sender, EventArgs e)
         {
-            if (CurrencyDataGridView.SelectedRows.Count > 0)
+            if (CurrencyDataGridView.SelectedRows.Count > 0 &&
+                !_favoritesList.Contains((Currency)CurrencyDataGridView.SelectedRows[0].DataBoundItem))
             {
                 AddFavoriteButton.Enabled = true;
+                DeleteFavoriteButton.Enabled = false;
+            }
+            else
+            {
+                AddFavoriteButton.Enabled = false;
+                DeleteFavoriteButton.Enabled = true;
             }
         }
 
@@ -93,21 +105,57 @@ namespace ExchangeWidget.Pages
             _favoritesList.Add((Currency)CurrencyDataGridView.SelectedRows[0].DataBoundItem);
         }
 
+        private void DeleteFavoriteButton_Click(object sender, EventArgs e)
+        {
+            using var context = new CurrencyContext();
+            var item = new Favorite();
+
+            var currentTab = CurrencyList.SelectedTab;
+
+            if (currentTab.Name == "CursPage")
+            {
+                item.Code = (int)CurrencyDataGridView.SelectedRows[0].Cells[3].Value;
+            }
+            else if (currentTab.Name == "FavouritesPage")
+            {
+                item.Code = (int)FavoritesDataGridView.SelectedRows[0].Cells[3].Value;
+            }
+
+            context.Favorites.Remove(item);
+            context.SaveChanges();
+
+            var removedItem = _favoritesList.First(x => x.Code == item.Code);
+            _favoritesList.Remove(removedItem);
+        }
+
         private void CurrencyList_Selected(object sender, TabControlEventArgs e)
         {
-            if (e.TabPage.Name == "CursPage")
+            RefreshStatusAndButtons();
+        }
+
+        private void RefreshStatusAndButtons()
+        {
+            var currentTab = CurrencyList.SelectedTab;
+
+            if (currentTab.Name == "CursPage")
             {
-                RefreshStatusDate();
+                StatusLabel.Text = $"Данные выгружены на {_date.ToString("dd.MM.yyyy")}. Количество выгруженных курсов валют: {_counter}";
+                CurrencyDataGridView_SelectionChanged(null!, null!);
             }
-            else if (e.TabPage.Name == "FavouritesPage")
+            else if (currentTab.Name == "FavouritesPage")
             {
                 StatusLabel.Text = $"Количество курсов валют в избранном: {_favoritesList.Count}";
+                AddFavoriteButton.Enabled = false;
+                DeleteFavoriteButton.Enabled = true;
             }
         }
 
-        private void RefreshStatusDate()
+        private void SetInitialTabPage()
         {
-            StatusLabel.Text = $"Данные выгружены на {_date.ToString("dd.MM.yyyy")}. Количество выгруженных курсов валют: {_counter}";
+            if (_favoritesList.Count > 0)
+            {
+                CurrencyList.SelectedTab = FavouritesPage;
+            }
         }
     }
 }

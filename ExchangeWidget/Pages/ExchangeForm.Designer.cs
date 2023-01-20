@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExchangeForm));
             this.MainPanel = new System.Windows.Forms.Panel();
             this.CurrencyList = new System.Windows.Forms.TabControl();
             this.CursPage = new System.Windows.Forms.TabPage();
@@ -51,6 +50,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.FakePanel = new System.Windows.Forms.Panel();
+            this.DeleteFavoriteButton = new System.Windows.Forms.ToolStripButton();
             this.MainPanel.SuspendLayout();
             this.CurrencyList.SuspendLayout();
             this.CursPage.SuspendLayout();
@@ -230,7 +230,8 @@
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.RefreshButton,
-            this.AddFavoriteButton});
+            this.AddFavoriteButton,
+            this.DeleteFavoriteButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(818, 25);
@@ -239,7 +240,7 @@
             // 
             // RefreshButton
             // 
-            this.RefreshButton.Image = ((System.Drawing.Image)(resources.GetObject("RefreshButton.Image")));
+            this.RefreshButton.Image = global::ExchangeWidget.Properties.Resources.refresh;
             this.RefreshButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.RefreshButton.Name = "RefreshButton";
             this.RefreshButton.Size = new System.Drawing.Size(81, 22);
@@ -249,7 +250,7 @@
             // AddFavoriteButton
             // 
             this.AddFavoriteButton.Enabled = false;
-            this.AddFavoriteButton.Image = ((System.Drawing.Image)(resources.GetObject("AddFavoriteButton.Image")));
+            this.AddFavoriteButton.Image = global::ExchangeWidget.Properties.Resources.add;
             this.AddFavoriteButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.AddFavoriteButton.Name = "AddFavoriteButton";
             this.AddFavoriteButton.Size = new System.Drawing.Size(150, 22);
@@ -279,6 +280,15 @@
             this.FakePanel.Name = "FakePanel";
             this.FakePanel.Size = new System.Drawing.Size(818, 24);
             this.FakePanel.TabIndex = 4;
+            // 
+            // DeleteFavoriteButton
+            // 
+            this.DeleteFavoriteButton.Image = global::ExchangeWidget.Properties.Resources.remove;
+            this.DeleteFavoriteButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.DeleteFavoriteButton.Name = "DeleteFavoriteButton";
+            this.DeleteFavoriteButton.Size = new System.Drawing.Size(154, 22);
+            this.DeleteFavoriteButton.Text = "Удалить из избранного";
+            this.DeleteFavoriteButton.Click += new System.EventHandler(this.DeleteFavoriteButton_Click);
             // 
             // ExchangeForm
             // 
@@ -326,5 +336,6 @@
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private Panel FakePanel;
+        private ToolStripButton DeleteFavoriteButton;
     }
 }
