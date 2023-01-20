@@ -3,41 +3,40 @@ using ExchangeWidget.Database;
 using ExchangeWidget.ServiceModel;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Xml;
 
 namespace ExchangeWidget.Pages
 {
     public partial class ExchangeForm : Form
     {
-        private readonly BindingList<Currency> _currencyList;
-        private readonly BindingList<Currency> _favoritesList;
-        private int _counter;
+        private BindingList<Currency> _currencyList;
+        private BindingList<Currency> _favoritesList;
         private DateTime _date;
+
         public ExchangeForm()
         {
             InitializeComponent();
-
-            _currencyList = new BindingList<Currency>();
-            _favoritesList = new BindingList<Currency>();
-            GetCurrencyList();
-            GetFavoritesList();
-            CurrencyDataGridView.DataSource = _currencyList;
-            FavoritesDataGridView.DataSource = _favoritesList;
-
-            SetInitialTabPage();
-            RefreshStatusAndButtons();
+            RefreshButton.PerformClick();
+            CurrencyList.SelectedTab = _favoritesList!.Count > 0 ? FavoritesPage : CursPage;
+            RefreshStatus();
         }
 
-        private void GetCurrencyList()
+        #region Service Integration
+
+        private static DateTime GetLatestCursDate()
         {
-            _currencyList.Clear();
-            var node = new BankService.DailyInfoSoapClient(DailyInfoSoapClient.EndpointConfiguration.DailyInfoSoap);
-            _date = node.GetLatestDateTime();
-            var elements = node.GetCursOnDateXML(_date);
+            var node = new DailyInfoSoapClient(DailyInfoSoapClient.EndpointConfiguration.DailyInfoSoap);
+            return node.GetLatestDateTime();
+        }
+
+        private static List<Currency> GetCurrencyList(DateTime cursDate)
+        {
+            var currencyList = new List<Currency>();
+            var node = new DailyInfoSoapClient(DailyInfoSoapClient.EndpointConfiguration.DailyInfoSoap);
+            var elements = node.GetCursOnDateXML(cursDate);
             foreach (XmlNode currency in elements.ChildNodes)
             {
-                _currencyList.Add(new Currency()
+                currencyList.Add(new Currency()
                 {
                     Name = currency["Vname"]!.InnerText.Trim(),
                     Nominal = int.Parse(currency["Vnom"]!.InnerText.Trim()),
@@ -46,116 +45,132 @@ namespace ExchangeWidget.Pages
                     CharCode = currency["VchCode"]!.InnerText.Trim(),
                 });
             }
-
-            _counter = elements.ChildNodes.Count;
+            return currencyList;
         }
 
-        private void GetFavoritesList()
+        #endregion
+
+        #region Database Integration
+
+        private List<Currency> GetFavoritesCurrencyList()
         {
-            _favoritesList.Clear();
-            var favoritesCodeList = new List<int>();
+            var currencyList = new List<Currency>();
             using var context = new CurrencyContext();
-            favoritesCodeList.AddRange(context.Favorites.Select(x => x.Code));
-
-            foreach (var item in _currencyList
-                                            .Where(x => favoritesCodeList
-                                            .Any(y => y == x.Code)))
-            {
-                _favoritesList.Add(item);
-            }
-
+            var codes = context.Favorites.Select(x => x.Code);
+            currencyList.AddRange(_currencyList.Where(x => codes.Contains(x.Code)));
+            return currencyList;
         }
 
-        private void RefreshButton_Click(object sender, EventArgs e)
+        private static void AddToFavorites(Favorite favorite)
         {
-            GetCurrencyList();
-            GetFavoritesList();
-            RefreshStatusAndButtons();
+            using var context = new CurrencyContext();
+            if (context.Favorites.Find(favorite.Code) != null)
+                return;
+
+            context.Favorites.Add(favorite);
+            context.SaveChanges();
         }
 
-        private void CurrencyDataGridView_SelectionChanged(object sender, EventArgs e)
+        private static void RemoveFromFavorites(Favorite favorite)
         {
-            if (CurrencyDataGridView.SelectedRows.Count > 0 &&
-                !_favoritesList.Contains((Currency)CurrencyDataGridView.SelectedRows[0].DataBoundItem))
-            {
-                AddFavoriteButton.Enabled = true;
-                DeleteFavoriteButton.Enabled = false;
-            }
-            else
-            {
-                AddFavoriteButton.Enabled = false;
-                DeleteFavoriteButton.Enabled = true;
-            }
+            using var context = new CurrencyContext();
+            context.Favorites.Remove(favorite);
+            context.SaveChanges();
         }
+
+        #endregion
+
+        #region Buttons
 
         private void AddFavoriteButton_Click(object sender, EventArgs e)
         {
-            using var context = new CurrencyContext();
-            var item = new Favorite
-            {
-                Code = (int)CurrencyDataGridView.SelectedRows[0].Cells[3].Value
-            };
-
-            if (context.Favorites.Find(item.Code) != null)
-                return;
-
-            context.Favorites.Add(item);
-            context.SaveChanges();
-
-            _favoritesList.Add((Currency)CurrencyDataGridView.SelectedRows[0].DataBoundItem);
+            var selectedCurrency = (Currency)CurrencyDataGridView.SelectedRows[0].DataBoundItem;
+            var item = new Favorite(selectedCurrency.Code);
+            AddToFavorites(item);
+            _favoritesList.Add(selectedCurrency);
+            ToggleButtons(CurrencyDataGridView);
         }
 
         private void DeleteFavoriteButton_Click(object sender, EventArgs e)
         {
-            using var context = new CurrencyContext();
-            var item = new Favorite();
-
-            var currentTab = CurrencyList.SelectedTab;
-
-            if (currentTab.Name == "CursPage")
+            var selectedCurrency = CurrencyList.SelectedIndex switch
             {
-                item.Code = (int)CurrencyDataGridView.SelectedRows[0].Cells[3].Value;
-            }
-            else if (currentTab.Name == "FavouritesPage")
-            {
-                item.Code = (int)FavoritesDataGridView.SelectedRows[0].Cells[3].Value;
-            }
+                0 => (Currency)CurrencyDataGridView.SelectedRows[0].DataBoundItem,
+                1 => (Currency)FavoritesDataGridView.SelectedRows[0].DataBoundItem
+            };
+            var item = new Favorite(selectedCurrency.Code);
+            RemoveFromFavorites(item);
+            _favoritesList.Remove(selectedCurrency);
+            RefreshStatus();
+        }
 
-            context.Favorites.Remove(item);
-            context.SaveChanges();
+        private void RefreshButton_Click(object sender, EventArgs e)
+        {
+            _date = GetLatestCursDate();
+            _currencyList = new BindingList<Currency>(GetCurrencyList(_date));
+            _favoritesList = new BindingList<Currency>(GetFavoritesCurrencyList());
+            CurrencyDataGridView.DataSource = _currencyList;
+            FavoritesDataGridView.DataSource = _favoritesList;
+            RefreshStatus();
+        }
 
-            var removedItem = _favoritesList.First(x => x.Code == item.Code);
-            _favoritesList.Remove(removedItem);
+        #endregion
+
+        private void DataGridView_SelectionChanged(object sender, EventArgs e)
+        {
+            ToggleButtons((DataGridView)sender);
         }
 
         private void CurrencyList_Selected(object sender, TabControlEventArgs e)
         {
-            RefreshStatusAndButtons();
+            var dataGridView = e.TabPageIndex switch
+            {
+                0 => CurrencyDataGridView,
+                1 => FavoritesDataGridView
+            };
+            ToggleButtons(dataGridView);
+            RefreshStatus();
         }
 
-        private void RefreshStatusAndButtons()
+        private void ToggleButtons(DataGridView sender)
         {
-            var currentTab = CurrencyList.SelectedTab;
+            if (sender.SelectedRows.Count > 0)
+            {
+                if (sender.Name == "FavoritesDataGridView")
+                {
+                    AddFavoriteButton.Enabled = false;
+                    DeleteFavoriteButton.Enabled = true;
+                    return;
+                }
 
-            if (currentTab.Name == "CursPage")
-            {
-                StatusLabel.Text = $"Данные выгружены на {_date.ToString("dd.MM.yyyy")}. Количество выгруженных курсов валют: {_counter}";
-                CurrencyDataGridView_SelectionChanged(null!, null!);
+                var selectedCurrency = (Currency)sender.SelectedRows[0].DataBoundItem;
+                if (_favoritesList.Contains(selectedCurrency))
+                {
+                    AddFavoriteButton.Enabled = false;
+                    DeleteFavoriteButton.Enabled = true;
+                    
+                }
+                else
+                {
+                    AddFavoriteButton.Enabled = true;
+                    DeleteFavoriteButton.Enabled = false;
+                }
             }
-            else if (currentTab.Name == "FavouritesPage")
+            else
             {
-                StatusLabel.Text = $"Количество курсов валют в избранном: {_favoritesList.Count}";
                 AddFavoriteButton.Enabled = false;
-                DeleteFavoriteButton.Enabled = true;
+                DeleteFavoriteButton.Enabled = false;
             }
         }
 
-        private void SetInitialTabPage()
+        private void RefreshStatus()
         {
-            if (_favoritesList.Count > 0)
+            StatusLabel.Text = CurrencyList.SelectedIndex switch
             {
-                CurrencyList.SelectedTab = FavouritesPage;
-            }
+                0 => $"Данные выгружены на {_date:dd.MM.yyyy}. " +
+                     $"Количество выгруженных курсов валют: {_currencyList.Count}",
+                1 => $"Количество курсов валют в избранном: {_favoritesList.Count}",
+            };
         }
     }
 }

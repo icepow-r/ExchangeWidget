@@ -37,7 +37,7 @@
             this.CursColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CodeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CharCodeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FavouritesPage = new System.Windows.Forms.TabPage();
+            this.FavoritesPage = new System.Windows.Forms.TabPage();
             this.FavoritesDataGridView = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -47,15 +47,15 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.RefreshButton = new System.Windows.Forms.ToolStripButton();
             this.AddFavoriteButton = new System.Windows.Forms.ToolStripButton();
+            this.DeleteFavoriteButton = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.FakePanel = new System.Windows.Forms.Panel();
-            this.DeleteFavoriteButton = new System.Windows.Forms.ToolStripButton();
             this.MainPanel.SuspendLayout();
             this.CurrencyList.SuspendLayout();
             this.CursPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyDataGridView)).BeginInit();
-            this.FavouritesPage.SuspendLayout();
+            this.FavoritesPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FavoritesDataGridView)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -76,7 +76,7 @@
             // CurrencyList
             // 
             this.CurrencyList.Controls.Add(this.CursPage);
-            this.CurrencyList.Controls.Add(this.FavouritesPage);
+            this.CurrencyList.Controls.Add(this.FavoritesPage);
             this.CurrencyList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.CurrencyList.Location = new System.Drawing.Point(0, 49);
             this.CurrencyList.Name = "CurrencyList";
@@ -116,7 +116,7 @@
             this.CurrencyDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.CurrencyDataGridView.Size = new System.Drawing.Size(804, 345);
             this.CurrencyDataGridView.TabIndex = 0;
-            this.CurrencyDataGridView.SelectionChanged += new System.EventHandler(this.CurrencyDataGridView_SelectionChanged);
+            this.CurrencyDataGridView.SelectionChanged += new System.EventHandler(this.DataGridView_SelectionChanged);
             // 
             // NameColumn
             // 
@@ -156,16 +156,16 @@
             this.CharCodeColumn.ReadOnly = true;
             this.CharCodeColumn.Width = 180;
             // 
-            // FavouritesPage
+            // FavoritesPage
             // 
-            this.FavouritesPage.Controls.Add(this.FavoritesDataGridView);
-            this.FavouritesPage.Location = new System.Drawing.Point(4, 24);
-            this.FavouritesPage.Name = "FavouritesPage";
-            this.FavouritesPage.Padding = new System.Windows.Forms.Padding(3);
-            this.FavouritesPage.Size = new System.Drawing.Size(810, 351);
-            this.FavouritesPage.TabIndex = 1;
-            this.FavouritesPage.Text = "Избранное";
-            this.FavouritesPage.UseVisualStyleBackColor = true;
+            this.FavoritesPage.Controls.Add(this.FavoritesDataGridView);
+            this.FavoritesPage.Location = new System.Drawing.Point(4, 24);
+            this.FavoritesPage.Name = "FavoritesPage";
+            this.FavoritesPage.Padding = new System.Windows.Forms.Padding(3);
+            this.FavoritesPage.Size = new System.Drawing.Size(810, 351);
+            this.FavoritesPage.TabIndex = 1;
+            this.FavoritesPage.Text = "Избранное";
+            this.FavoritesPage.UseVisualStyleBackColor = true;
             // 
             // FavoritesDataGridView
             // 
@@ -187,6 +187,7 @@
             this.FavoritesDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FavoritesDataGridView.Size = new System.Drawing.Size(804, 345);
             this.FavoritesDataGridView.TabIndex = 1;
+            this.FavoritesDataGridView.SelectionChanged += new System.EventHandler(this.DataGridView_SelectionChanged);
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -257,6 +258,15 @@
             this.AddFavoriteButton.Text = "Добавить в избранное";
             this.AddFavoriteButton.Click += new System.EventHandler(this.AddFavoriteButton_Click);
             // 
+            // DeleteFavoriteButton
+            // 
+            this.DeleteFavoriteButton.Image = global::ExchangeWidget.Properties.Resources.remove;
+            this.DeleteFavoriteButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.DeleteFavoriteButton.Name = "DeleteFavoriteButton";
+            this.DeleteFavoriteButton.Size = new System.Drawing.Size(154, 22);
+            this.DeleteFavoriteButton.Text = "Удалить из избранного";
+            this.DeleteFavoriteButton.Click += new System.EventHandler(this.DeleteFavoriteButton_Click);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -281,15 +291,6 @@
             this.FakePanel.Size = new System.Drawing.Size(818, 24);
             this.FakePanel.TabIndex = 4;
             // 
-            // DeleteFavoriteButton
-            // 
-            this.DeleteFavoriteButton.Image = global::ExchangeWidget.Properties.Resources.remove;
-            this.DeleteFavoriteButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.DeleteFavoriteButton.Name = "DeleteFavoriteButton";
-            this.DeleteFavoriteButton.Size = new System.Drawing.Size(154, 22);
-            this.DeleteFavoriteButton.Text = "Удалить из избранного";
-            this.DeleteFavoriteButton.Click += new System.EventHandler(this.DeleteFavoriteButton_Click);
-            // 
             // ExchangeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -303,7 +304,7 @@
             this.CurrencyList.ResumeLayout(false);
             this.CursPage.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyDataGridView)).EndInit();
-            this.FavouritesPage.ResumeLayout(false);
+            this.FavoritesPage.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.FavoritesDataGridView)).EndInit();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
@@ -320,7 +321,7 @@
         private ToolStripStatusLabel StatusLabel;
         private TabControl CurrencyList;
         private TabPage CursPage;
-        private TabPage FavouritesPage;
+        private TabPage FavoritesPage;
         private ToolStripButton AddFavoriteButton;
         public Panel MainPanel;
         private DataGridView CurrencyDataGridView;
